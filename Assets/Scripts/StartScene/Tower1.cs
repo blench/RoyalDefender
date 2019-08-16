@@ -28,11 +28,15 @@ public class Tower1 : MonoBehaviour {
     public int SwitchAudio = 1;
     //弓箭手的攻击力
     public float attackPower { set; get; }
-
+    // 金币数的脚本变化
+    private GoldNum goldNum;
+    private Text goldNotEnoughText;
     void Start () {
         soundAudioSource = GameObject.Find("MainMenuCanvas").transform.Find("Sound").GetComponent<AudioSource>();
 
         codeController1 = GameObject.Find("Controller1").GetComponent<Controller1>();
+        goldNum = GameObject.Find("MainMenuCanvas/BattleScene/HpGold/Gold").GetComponent<GoldNum>();
+        goldNotEnoughText = GameObject.Find("MainMenuCanvas/BattleScene/GoldNumNotEnough").GetComponent<Text>();
         //初始攻击力
         attackPower = 2;
     }
@@ -49,6 +53,7 @@ public class Tower1 : MonoBehaviour {
                 }
             }
         }
+        //Debug.Log("\t" + "GoldNum: " + goldNum.goldNum);
     }
     private void Delay()
     {
@@ -68,7 +73,7 @@ public class Tower1 : MonoBehaviour {
         range.GetComponent<Image>().enabled = true;
         escalate.GetComponent<Animator>().SetInteger("Switch", 1);
     }
-    //-------------------------
+    //-------------------------进入塔防攻击范围
     public void OnPointerEnterTowerEscalate()
     {
         isGrade = false;
@@ -86,6 +91,7 @@ public class Tower1 : MonoBehaviour {
             rectTransform.localScale = new Vector3(1.4f, 1.4f, 1);
         }
     }
+    //-------------------离开塔防攻击范围
     public void OnPointerExitTowerEscalate()
     {
         if (!isGrade)
@@ -105,12 +111,12 @@ public class Tower1 : MonoBehaviour {
             }
         }
     }
-    //升级
+    //升级塔防
     public void OnPointerTowerEscalate()
     {
-        if (grade != 3)
+        if (grade != 3 && goldNum.goldNum >= 500)
         {
-            if (grade == 1)
+            if (grade == 1 && goldNum.goldNum >= 500)
             {
                 grade = 2;
                 isGrade = true;
@@ -119,7 +125,7 @@ public class Tower1 : MonoBehaviour {
                 transform.Find("Archer1").gameObject.GetComponent<Animator>().SetLayerWeight(1, 1);
                 transform.Find("Archer2").gameObject.GetComponent<Animator>().SetLayerWeight(1, 1);
             }
-            else if (grade == 2)
+            else if (grade == 2 && goldNum.goldNum >= 500)
             {
                 grade = 3;
                 isGrade = true;
@@ -127,6 +133,8 @@ public class Tower1 : MonoBehaviour {
                 transform.Find("Tower").gameObject.GetComponent<Image>().sprite = sprites[2];
                 transform.Find("Archer1").gameObject.GetComponent<Animator>().SetLayerWeight(2, 1);
                 transform.Find("Archer2").gameObject.GetComponent<Animator>().SetLayerWeight(2, 1);
+            } else {
+
             }
             foundPoint.GetComponent<AudioSource>().clip = audioClips[SwitchAudio % 3];
             foundPoint.GetComponent<AudioSource>().Play();
@@ -135,8 +143,18 @@ public class Tower1 : MonoBehaviour {
             range.GetComponent<Range1>().isStart = false;
             SwitchAudio++;
             Invoke("EscalateDelay", 1.5f);
+            goldNum.goldNum -= 500;
+        } else {
+            goldNotEnoughText.enabled = true;
+            Invoke("HideGoldEnoughText", 2.0f);
         }
     }
+
+    private void HideGoldEnoughText()
+    {
+        goldNotEnoughText.enabled = false;
+    }
+
     public void EscalateDelay()
     {
         range.GetComponent<Range1>().isStart = true;

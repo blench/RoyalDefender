@@ -28,11 +28,16 @@ public class Tower3 : MonoBehaviour {
     public int SwitchAudio = 1;
     //法师塔的伤害
     public float attackPower { set; get; }
+    // 金币数的脚本变化，升级用的
+    private GoldNum goldNum;
+    private Text goldNotEnoughText;
     void Start()
     {
         soundAudioSource = GameObject.Find("MainMenuCanvas").transform.Find("Sound").GetComponent<AudioSource>();
 
         controller1 = GameObject.Find("Controller1").GetComponent<Controller1>();
+        goldNum = GameObject.Find("MainMenuCanvas/BattleScene/HpGold/Gold").GetComponent<GoldNum>();
+        goldNotEnoughText = GameObject.Find("MainMenuCanvas/BattleScene/GoldNumNotEnough").GetComponent<Text>();
         //初始伤害
         attackPower = 15;
     }
@@ -108,7 +113,7 @@ public class Tower3 : MonoBehaviour {
     //升级
     public void OnPointerTowerEscalate()
     {
-        if (grade != 3)
+        if (grade != 3 && goldNum.goldNum >= 800)
         {
             if (grade == 1)
             {
@@ -131,8 +136,18 @@ public class Tower3 : MonoBehaviour {
             range.GetComponent<Range3>().isStart = false;
             SwitchAudio++;
             Invoke("EscalateDelay", 1.5f);
+            goldNum.goldNum -= 800;
+        } else {
+           goldNotEnoughText.enabled = true;
+            Invoke("HideGoldEnoughText", 2.0f);
         }
     }
+
+    private void HideGoldEnoughText()
+    {
+        goldNotEnoughText.enabled = false;
+    }
+
     public void EscalateDelay()
     {
         range.GetComponent<Range3>().isStart = true;

@@ -28,11 +28,15 @@ public class Tower4 : MonoBehaviour {
     public int SwitchAudio = 1;
     //炮弹的伤害
     public float attackPower { set; get; }
+    private GoldNum goldNum;
+    private Text goldNotEnoughText;
     void Start()
     {
         soundAudioSource = GameObject.Find("MainMenuCanvas").transform.Find("Sound").GetComponent<AudioSource>();
 
         codeController1 = GameObject.Find("Controller1").GetComponent<Controller1>();
+        goldNum = GameObject.Find("MainMenuCanvas/BattleScene/HpGold/Gold").GetComponent<GoldNum>();
+        goldNotEnoughText = GameObject.Find("MainMenuCanvas/BattleScene/GoldNumNotEnough").GetComponent<Text>();
         grade = 1;
         attackPower = 10;
     }
@@ -108,7 +112,7 @@ public class Tower4 : MonoBehaviour {
     //升级
     public void OnPointerTowerEscalate()
     {
-        if (grade != 3)
+        if (grade != 3 && goldNum.goldNum >= 700)
         {
             if (grade == 1)
             {
@@ -129,8 +133,18 @@ public class Tower4 : MonoBehaviour {
             range.GetComponent<Range4>().isStart = false;
             SwitchAudio++;
             Invoke("EscalateDelay", 1.5f);
+            goldNum.goldNum -= 700;
+        }  else {
+           goldNotEnoughText.enabled = true;
+            Invoke("HideGoldEnoughText", 2.0f);
         }
     }
+
+    private void HideGoldEnoughText()
+    {
+        goldNotEnoughText.enabled = false;
+    }
+    
     public void EscalateDelay()
     {
         range.GetComponent<Range4>().isStart = true;

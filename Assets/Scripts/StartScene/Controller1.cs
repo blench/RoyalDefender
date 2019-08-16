@@ -209,7 +209,7 @@ public class Controller1 : MonoBehaviour {
     //-------------------------
     public void OnPointerPertain()
     {
-
+        
     }
     //------------------------
     //下面3个方法是创建新游戏或者继续游戏

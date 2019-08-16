@@ -36,12 +36,17 @@ public class Tower2 : MonoBehaviour {
     //小兵的Hp
     public float hp { set; get; }
     private bool isAssembly = false;
+     // 金币数的脚本变化
+    private GoldNum goldNum;
+    private Text goldNotEnoughText;
     void Start()
     {
         soundAudioSource = GameObject.Find("MainMenuCanvas").transform.Find("Sound").GetComponent<AudioSource>();
 
         Controller1 = GameObject.Find("Controller1").GetComponent<Controller1>();
         Controller2 = GameObject.Find("Controller2").GetComponent<Controller2>();
+        goldNum = GameObject.Find("MainMenuCanvas/BattleScene/HpGold/Gold").GetComponent<GoldNum>();
+        goldNotEnoughText = GameObject.Find("MainMenuCanvas/BattleScene/GoldNumNotEnough").GetComponent<Text>();
         //初始攻击力
         attackPower = 2;
         hp = 40;
@@ -162,7 +167,7 @@ public class Tower2 : MonoBehaviour {
     //升级
     public void OnPointerTowerEscalate()
     {
-        if (grade != 3)
+        if (grade != 3 && goldNum.goldNum >= 500)
         {
             if (grade == 1)
             {
@@ -191,8 +196,18 @@ public class Tower2 : MonoBehaviour {
             foundPoint.GetComponent<AudioSource>().clip = audioClips[SwitchAudio % 4];
             foundPoint.GetComponent<AudioSource>().Play();
             SwitchAudio++;
+            goldNum.goldNum -= 500;
+        } else {
+            goldNotEnoughText.enabled = true;
+            Invoke("HideGoldEnoughText", 0.9f);
         }
     }
+
+    private void HideGoldEnoughText()
+    {
+        goldNotEnoughText.enabled = false;
+    }
+
     public void OnPointerMuster()
     {
         isAssembly = true;

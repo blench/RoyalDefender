@@ -7,14 +7,15 @@ public class Controller2 : MonoBehaviour {
 
     //主逻辑脚本
     public GameObject Controller1;
-    //黄金数量
-	public int goldNum{ set; get;}
-	public Text GoldText;
-    //生命值大小
-    public int lifeValue { set; get;}
-	public Text LifeValueText;
+   //黄金数量对象脚本
+    private GoldNum goldNum;
+   //生命值对象脚本
+    private LifeValue lifeValue;
     //敌人1
     public GameObject Enemy1;
+
+    //BattleScene游戏物体
+    public GameObject battleScene;
     [HideInInspector]
     public List<GameObject> enemys = new List<GameObject>();
     //塔
@@ -40,8 +41,15 @@ public class Controller2 : MonoBehaviour {
         deadNum = 100;
         isStart = 1;
         number = 0;
-        goldNum = 1000;
-        lifeValue = 100;
+        if (battleScene.active) 
+        {
+            goldNum = GameObject.Find("MainMenuCanvas/BattleScene/HpGold/Gold").GetComponent<GoldNum>() as GoldNum;
+            lifeValue = GameObject.Find("MainMenuCanvas/BattleScene/HpGold/LifeValue").GetComponent<LifeValue>() as LifeValue;
+        } else {
+            battleScene.SetActive(true);
+            goldNum = GameObject.Find("MainMenuCanvas/BattleScene/HpGold/Gold").GetComponent<GoldNum>() as GoldNum;
+            lifeValue = GameObject.Find("MainMenuCanvas/BattleScene/HpGold/LifeValue").GetComponent<LifeValue>() as LifeValue;
+        }
     }
 
     void Update() {
@@ -57,14 +65,9 @@ public class Controller2 : MonoBehaviour {
             NewEnemy();
             FindBattle();
         }
-        GoldLifeChange();
+       // Debug.Log("LifeValue" + lifeValue.lifeValue + "\t" + "GoldNum: " + goldNum.goldNum);
     }
 
-    private void GoldLifeChange() 
-    {
-        GoldText.text = goldNum + "";
-        LifeValueText.text = lifeValue + "";
-    }
     private void NewTower()
     {
         foreach(Vector3 pos in battlePointCode.TowerPoints)
@@ -100,7 +103,7 @@ public class Controller2 : MonoBehaviour {
                 if (enemys[i].GetComponent<Enemy>().isDead)
                 {
                     enemys.Remove(enemys[i]);
-                    goldNum += 100;
+                    goldNum.goldNum += 100;
                     deadNum--;
                 }
             }
@@ -132,7 +135,7 @@ public class Controller2 : MonoBehaviour {
 
                         if (_soldier.isDead)
                         {
-                            lifeValue -= 1;
+                            lifeValue.lifeValue -= 1;
                         }   
                     }
                 }
